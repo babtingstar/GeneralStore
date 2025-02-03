@@ -11,14 +11,14 @@
 <div class="container" id="container">
     <h1>피자 상세정보</h1>
     <div id="pizzaDetail">
-            <img class="pizza-img" src="/images/default-pizza.png" id="pizza-img">
-            <p><strong>이름 : </strong><span id="pizza-name"></span></p>
-            <p><strong>가격 : </strong><span id="pizza-price"></span></p>
-            <p><strong>설명 : </strong><span id="pizza-description"></span></p>
+        <img class="pizza-img" src="/images/default-pizza.png" id="pizza-img">
+        <p><strong>이름 : </strong><span id="pizza-name"></span></p>
+        <p><strong>가격 : </strong><span id="pizza-price"></span></p>
+        <p><strong>설명 : </strong><span id="pizza-description"></span></p>
     </div>
     <!-- 상세정보 / 수정 / 삭제 버튼 추가 -->
     <div class="buttons">
-        <a id="edit-button" class="btn" href="#">수정</a>
+        <a id="edit-button" class="btn">수정</a>
         <button id="delete-button" class="btn">삭제</button>
         <a href="/pizzas" class="btn">목록으로 이동하기</a>
     </div>
@@ -28,14 +28,16 @@
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
 
+    // 상세보기 url 설정
     $.ajax({
         // url: 'api/pizzas/' + id,
-        url: `/api/pizza/${id}`,
+        url: `/api/pizzas/${id}`,
         method: 'GET',
         success: function (data) {
             $('#pizza-name').text(data.name);
             $('#pizza-description').text(data.description);
             $('#pizza-price').text(data.price);
+            $("#edit-button").attr("href", `/pizzas/edit?id=${id}`);
         },
         error: function () {
             alert("피자 정보를 가져올 수 없습니다.");
@@ -45,5 +47,25 @@
             // window.location.href="/pizzas";
         }
     })
+
+    // 삭제 url 설정
+    $('#delete-button').click(function () {
+        if (confirm("정말로 이 피자를 삭제하시겠습니까?")) {
+            $.ajax({
+                url: `/api/pizza/${id}`,
+                method: 'DELETE',
+                success: function () {
+                    alert("피자가 성공적으로 삭제되었습니다.");
+                    window.location.replace("/pizzas");
+                },
+                error: function () {
+                    alert("피자 삭제에 실패했습니다.");
+                }
+            })
+        }
+    })
+
+    // 수정하는 html 이동하는 url 설정
+
 </script>
 </html>

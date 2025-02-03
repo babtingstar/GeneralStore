@@ -34,7 +34,8 @@ public class PizzaServiceImpl implements PizzaService {
 
     @Override
     public int updatePizza(Pizza pizza) {
-        // 피자 메뉴에 피자를 추가할 경우 이미지 젖아할 경로를 설정하여 추가
+        // 현재 시간 추가해서 이미지 저장 시 이름 겹치지 않도록 설정
+        // 피자 메뉴에 피자를 추가할 경우 이미지 저장할 경로를 설정하여 추가
         // 기존에 저장된 이미지 삭제 또는 보존
         return 0;
     }

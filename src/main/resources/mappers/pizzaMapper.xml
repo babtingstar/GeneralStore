@@ -18,4 +18,18 @@
         from PizzaMenu
         WHERE id=#{id}
     </delete>
+
+    <update id="updatePizza">
+        update PizzaMenu
+        SET name = #{name},
+            price = #{price},
+            description = #{description},
+            image_path = #{imagePath}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertPizza">
+        insert into PizzaMenu(name, price, description, image_path)
+        values (#{name}, #{price}, #{description}, #{imagePath})
+    </insert>
 </mapper>
