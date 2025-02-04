@@ -3,12 +3,21 @@ package edu.store.kh.GeneralStore.service;
 import edu.store.kh.GeneralStore.dto.Pizza;
 import edu.store.kh.GeneralStore.mapper.PizzaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PizzaServiceImpl implements PizzaService {
+
+    // 직접적으로 경로를 작성할 경우 파일 위치 노출에 대한 위험이 있기 때문에 properties 작성 후 불러오기
+    @Value("${upload-img}") // 파일이름.properties 에서 작성한 변수 이름을 가져와서 변수 이름 내 작성된 경로 사용
+    private String uploadImg;
 
     @Autowired
     private PizzaMapper pizzaMapper;
@@ -27,17 +36,83 @@ public class PizzaServiceImpl implements PizzaService {
     }
 
     @Override
-    public int insertPizza(Pizza pizza) {
-        // 피자 메뉴에 피자를 추가할 경우 이미지를 저장할 경로를설정하여 추가하
-        return 0;
+    public int insertPizza(int id, String name, int price, String description, MultipartFile imagePath) {
+
+        // insert -> System.
+        // System.currentTimeMillis() 를 이용해서 이미지 저장 코드 작성
+        // 피자메뉴에 피자를 추가할 경우 이미지를 저장할 경로를 설정하여 추가
+
+        // imagePath 앞에 System.currentTimeMillis() 현재시간추차한 다음
+        // pizza 변수에 저장
+
+        String currentMilTime = System.currentTimeMillis() + "";
+        String originalFilename = imagePath.getOriginalFilename();
+        String uniqueFileName = currentMilTime + originalFilename;
+
+        try {
+            File file = new File(uploadImg + uniqueFileName);
+            imagePath.transferTo(file);
+        } catch (IOException e) {
+            System.out.println("이미지 저장 담당자님파일 저장에 문제가 생겼습니다. 메롱");
+        }
+
+        Pizza pizza = new Pizza();
+        pizza.setId(id);
+        pizza.setName(name);
+        pizza.setDescription(description);
+
+        pizza.setImagePath(uploadImg + uniqueFileName);
+        return pizzaMapper.insertPizza(pizza);
     }
 
     @Override
-    public int updatePizza(Pizza pizza) {
-        // 현재 시간 추가해서 이미지 저장 시 이름 겹치지 않도록 설정
-        // 피자 메뉴에 피자를 추가할 경우 이미지 저장할 경로를 설정하여 추가
-        // 기존에 저장된 이미지 삭제 또는 보존
-        return 0;
+    public int updatePizza(int id, String name, int price, String description, MultipartFile imagePath) {
+
+        // 프론트엔드 -> 컨트롤러 전달받은 데이터 중에서 이미지 경로만 String 으로 DB 에 저장한 다음에
+        // pizza 라는 변수 이름으로 sql 에 전달
+
+        // 이미지를 저장하기 전에 사용자1, 사용자2, 사용자3, ... 가 저장하는 이미지 파일명이 일치하는 경우
+        // 마지막에 이미지를 저잫아는 사용자의 파일로 모두 덮어쓰기가 되기 때문에
+        // 각 회사만의 방법으로 이미지가 덮어쓰기가 되지 않도록 분류
+        // 1. UUID 2. System.currentTimeStamp() 사용
+        // Universally Unique Identifier 범용 고유 식별자
+        // UUID.randomUUID() = 거의 충돌 없는 고유한 식별자 만들기
+        // 만들어진 식별자 128비트(16바이트) 컴퓨터로 만들어진 값을 사람이 읽을 수 있는 문자열(String) 형태로 변환
+        // UUID 의 경우 기존에 있던 파일 이름을 임의값 36자리로 변환해서 사용
+        String uuid = UUID.randomUUID().toString(); // 8-4-4-4-12 총 36자리 문자열 하이픈(-) 포함
+
+        // 1-1. 확장자명을 고객이 작성한 확장자 명으로 가져오고 싶을 경우
+        String originalFilename = imagePath.getOriginalFilename(); // 사용자가 작성한 "파일이름.확장명" 가져오기
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")); // . 뒤의 작성된 확장명 가져오기
+
+
+        // 이미지를 어디에, 파일로 저장하라는 기능 작성
+        // File -> transfer.to
+
+        try { // 일단은 사용자 컴퓨터에서 이미지 데이터를 가져와 우리 회사 컴퓨터에 저장해보자
+            // File file = new File(imagePath.getOriginalFilename()); // 프로젝트 폴더 내에 클라이언트에서 가져온 파일이름 저장
+            // File file = new File("어디에 저장하고, 어떤 이름으로, 어떤 확장자로 저장할 것인가");
+            File file = new File(uploadImg + uuid + fileExtension); // fileExtension 사용자에게서 가져온 확장자명(파일 유형)
+
+            // 사용자에게 가져온 파일을 저장하겠다(회사컴퓨터.uuid 로 만든 랜덤 이름으로)
+            imagePath.transferTo(file);
+        } catch (IOException e) { // 그런데 문제가 생기면 문제가 생겼다 사용자에게 알리고 조취를 취하자 -> 일시중지, 작업 취소 등
+            System.out.println("이미지 저장 담당자님파일 저장에 문제가 생겼습니다. 메롱");
+        }
+
+        Pizza pizza = new Pizza();
+        pizza.setId(id);
+        pizza.setName(name);
+        pizza.setPrice(price);
+        pizza.setDescription(description);
+
+        // DB 에 경로를 추가할 때는 WebConfig 에 작성한 fake 경로를 파일명 앞에 작성
+        // 예를 들어 WebConfig 에서 C://pizza-image 경로를 /uploaded/ 라는 경로로 읽도록 설정
+        // DB 에 가짜 이미지 경로 + 파일명 + 확장자명
+        pizza.setImagePath(uploadImg + uuid + fileExtension);
+//        pizza.setImagePath(imagePath.getOriginalFilename()); // imagePath.getOriginalFilename() -> uuid 로 작성된 파일명 설정
+
+        return pizzaMapper.updatePizza(pizza);
     }
 
     @Override
