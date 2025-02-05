@@ -54,7 +54,3 @@ configurations {
 		extendsFrom annotationProcessor
 	}
 }
-
-tasks.named('test') {
-	useJUnitPlatform()
-}

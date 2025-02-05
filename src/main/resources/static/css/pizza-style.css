@@ -90,65 +90,6 @@ p {
     margin-top: 20px;
 }
 
-
-@media screen and (max-width: 768px) {
-    .container {
-        width: 90%;
-    }
-
-    table {
-        font-size: 14px;
-    }
-
-    .btn {
-        font-size: 12px;
-        padding: 6px 10px;
-    }
-
-    img {
-        width: 40px;
-    }
-}
-
-.container {
-    width: 80%;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
-}
-
-h1 {
-    text-align: center;
-    color: #333;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    text-align: center;
-    padding: 8px;
-}
-
-th {
-    background-color: #f4f4f4;
-}
-
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
 #pizza-image {
     display: none;
 }
@@ -175,8 +116,67 @@ button:hover {
     border-radius: 5px;
     cursor: pointer;
     font-size: 20px;
+
 }
 
 .image-preview label:hover {
     background-color: #0056b3;
+}
+
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+textarea {
+    height: 80px;
+    resize: none;
+}
+
+.btn#editCancel{
+    background-color: #dc3545;
+}
+
+.btn#editCancel:hover{
+    background-color: #c82333;
+}
+
+
+.btn[href] {
+    background-color: #17a2b8;
+}
+.btn[href]:hover {
+    background-color: #138496;
+}
+
+
+@media screen and (max-width: 768px) {
+    .container {
+        width: 90%;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    img {
+        width: 40px;
+    }
 }
